@@ -3,7 +3,7 @@
 // @namespace    http://tampermonkey.net/
 // @version      1.0
 // @description  Add zoom in/out controls to Narrow.One using FOV adjustments (Field of View modding)
-// @author       You
+// @author       EF mod
 // @match        *://*.narrow.one/*
 // @grant        none
 // ==/UserScript==
