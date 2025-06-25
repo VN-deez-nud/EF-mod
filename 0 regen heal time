@@ -1,0 +1,68 @@
+// ==UserScript==
+// @name         Narrow.One Hit Timer (Heal Countdown)
+// @namespace    http://tampermonkey.net/
+// @version      1.0
+// @description  Shows a visual timer when you're hit to track healing cooldown. Clean UI overlay with seconds countdown after damage is taken (non-intrusive). CN-style utility mod for timing heals in Narrow.One gameplay strategy.
+// @author       You
+// @match        *://*.narrow.one/*
+// @grant        none
+// ==/UserScript==
+
+(function () {
+    'use strict';
+
+    const healCooldown = 12; // seconds until likely heal
+    let lastHealth = 100;
+    let timerRunning = false;
+
+    // UI Timer Element
+    const timerBox = document.createElement("div");
+    timerBox.style.position = "fixed";
+    timerBox.style.top = "20px";
+    timerBox.style.right = "20px";
+    timerBox.style.padding = "10px 20px";
+    timerBox.style.background = "rgba(0, 0, 0, 0.7)";
+    timerBox.style.color = "#fff";
+    timerBox.style.fontSize = "20px";
+    timerBox.style.fontFamily = "Arial, sans-serif";
+    timerBox.style.borderRadius = "8px";
+    timerBox.style.zIndex = "9999";
+    timerBox.style.display = "none";
+    document.body.appendChild(timerBox);
+
+    function startHealTimer() {
+        if (timerRunning) return;
+        timerRunning = true;
+
+        let secondsLeft = healCooldown;
+        timerBox.innerText = `Heal in: ${secondsLeft}s`;
+        timerBox.style.display = "block";
+
+        const countdown = setInterval(() => {
+            secondsLeft--;
+            if (secondsLeft > 0) {
+                timerBox.innerText = `Heal in: ${secondsLeft}s`;
+            } else {
+                clearInterval(countdown);
+                timerBox.style.display = "none";
+                timerRunning = false;
+            }
+        }, 1000);
+    }
+
+    // Watch for health drop
+    const healthWatcher = setInterval(() => {
+        const players = window?.game?.players || window?.players;
+        if (!players) return;
+
+        const me = players.find(p => p.isLocal || p.localPlayer); // auto-detect local player
+        if (!me || typeof me.health !== "number") return;
+
+        if (me.health < lastHealth) {
+            console.log(`[Hit Timer] Got hit. Starting ${healCooldown}s countdown.`);
+            startHealTimer();
+        }
+
+        lastHealth = me.health;
+    }, 500);
+})();
