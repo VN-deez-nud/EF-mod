@@ -1,0 +1,58 @@
+// ==UserScript==
+// @name         Narrow.One Zoom Mod
+// @namespace    http://tampermonkey.net/
+// @version      1.0
+// @description  Add zoom in/out controls to Narrow.One using FOV adjustments (Field of View modding)
+// @author       You
+// @match        *://*.narrow.one/*
+// @grant        none
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    let fovValue = 75; // Default FOV
+    const minFov = 30;
+    const maxFov = 120;
+
+    console.log("[Zoom Mod] Script loaded.");
+
+    // Listen for keyboard zoom controls
+    window.addEventListener('keydown', (e) => {
+        if (e.key === '-' || e.key === '_') {
+            fovValue = Math.min(fovValue + 5, maxFov);
+            console.log("[Zoom Mod] Zooming out: FOV =", fovValue);
+            updateFOV();
+        }
+        if (e.key === '=' || e.key === '+') {
+            fovValue = Math.max(fovValue - 5, minFov);
+            console.log("[Zoom Mod] Zooming in: FOV =", fovValue);
+            updateFOV();
+        }
+    });
+
+    function updateFOV() {
+        const three = unsafeWindow?.THREE || window.THREE;
+        if (!three) return;
+
+        // Find the perspective camera
+        for (const key in three) {
+            if (three[key]?.prototype?.isPerspectiveCamera) {
+                const camProto = three[key].prototype;
+
+                // Patch updateProjectionMatrix to reset FOV
+                const originalUpdate = camProto.updateProjectionMatrix;
+                camProto.updateProjectionMatrix = function () {
+                    this.fov = fovValue;
+                    originalUpdate.call(this);
+                };
+
+                console.log("[Zoom Mod] Patched camera FOV to", fovValue);
+                break;
+            }
+        }
+    }
+
+    // Retry every second in case the camera loads late
+    const patchInterval = setInterval(updateFOV, 1000);
+})();
