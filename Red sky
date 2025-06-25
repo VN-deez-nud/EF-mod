@@ -1,0 +1,35 @@
+// ==UserScript==
+// @name         Narrow.One Red Sky Mod
+// @namespace    http://tampermonkey.net/
+// @version      1.0
+// @description  Change sky color to red in narrow.one
+// @author       You
+// @match        *://*.narrow.one/*
+// @grant        none
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    // Wait for the canvas to be available
+    const waitForCanvas = setInterval(() => {
+        const canvas = document.querySelector("canvas");
+
+        if (canvas) {
+            const gl = canvas.getContext("webgl2") || canvas.getContext("webgl");
+            if (!gl) return;
+
+            console.log("[Red Sky Mod] Canvas and WebGL context found.");
+
+            // Hook into the clearColor method to override sky color
+            const originalClearColor = gl.clearColor;
+            gl.clearColor = function(r, g, b, a) {
+                // Set a red sky background
+                return originalClearColor.call(this, 0.6, 0.0, 0.0, a); // dark red
+            };
+
+            console.log("[Red Sky Mod] Sky color set to red.");
+            clearInterval(waitForCanvas);
+        }
+    }, 1000);
+})();
