@@ -3,7 +3,7 @@
 // @namespace    http://tampermonkey.net/
 // @version      1.0
 // @description  Shows a visual timer when you're hit to track healing cooldown. Clean UI overlay with seconds countdown after damage is taken (non-intrusive). CN-style utility mod for timing heals in Narrow.One gameplay strategy.
-// @author       You
+// @author       EF mod
 // @match        *://*.narrow.one/*
 // @grant        none
 // ==/UserScript==
