@@ -3,7 +3,7 @@
 // @namespace    http://tampermonkey.net/
 // @version      1.0
 // @description  Change sky color to red in narrow.one
-// @author       You
+// @author       EF mod
 // @match        *://*.narrow.one/*
 // @grant        none
 // ==/UserScript==
