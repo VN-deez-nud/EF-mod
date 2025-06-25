@@ -1,0 +1,34 @@
+// ==UserScript==
+// @name         Narrow.One Green Sky Mod
+// @namespace    http://tampermonkey.net/
+// @version      1.0
+// @description  Change sky color to green in narrow.one
+// @author       You
+// @match        *://*.narrow.one/*
+// @grant        none
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    // Wait for the game to load
+    const waitForScene = setInterval(() => {
+        const sky = document.querySelector("canvas");
+
+        if (sky) {
+            // Attempt to override the render method (basic example)
+            const ctx = sky.getContext("webgl2") || sky.getContext("webgl");
+            if (ctx) {
+                console.log("Canvas found, attempting green sky...");
+
+                // Intercept WebGL clear color (hacky method)
+                const originalClearColor = ctx.clearColor;
+                ctx.clearColor = function(r, g, b, a) {
+                    // Override with green-ish sky
+                    return originalClearColor.call(this, 0.0, 0.6, 0.3, a); // light green sky
+                };
+            }
+            clearInterval(waitForScene);
+        }
+    }, 1000);
+})();
